@@ -22,7 +22,7 @@ import { FilesModule } from './files/files.module';
       synchronize: true,
     }),
     UsersModule,
-    FilesModule
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

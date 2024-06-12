@@ -7,31 +7,31 @@ import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery, ApiTa
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-    constructor(private usersService : UsersService){}
+  constructor(private usersService: UsersService) {}
 
-    @ApiOkResponse({type:User, isArray:true})
-    @Get('/all')
-    getUsers():User[]{
-        return this.usersService.findAll();
-    }
+  @ApiOkResponse({ type: [User] })
+  @Get('/all')
+  async getUsers(): Promise<User[]> {
+    return this.usersService.findAll();
+  }
 
-    @ApiNotFoundResponse()
-    @ApiOkResponse({type:User})
-    @Get(':id')
-    getUser(@Param('id') id:string):User{
-        return this.usersService.findById(Number(id));
-    }
+  @ApiNotFoundResponse()
+  @ApiOkResponse({ type: User })
+  @Get(':id')
+  async getUser(@Param('id') id: string): Promise<User> {
+    return this.usersService.findById(Number(id));
+  }
 
-    @ApiCreatedResponse({type: User})
-    @Post()
-    addUser(@Body() body: CreateUserDto):User {
-        return this.usersService.addUser(body);
-    }
+  @ApiCreatedResponse({ type: User })
+  @Post()
+  async addUser(@Body() body: CreateUserDto): Promise<User> {
+    return this.usersService.addUser(body);
+  }
 
-    @ApiOkResponse({type:User, isArray: true})
-    @ApiQuery({name:'name', required: false})
-    @Get('/serach-user')
-    searchUser(@Query('name') name?:string):User[] {
-        return this.usersService.searchUser(name)
-    }
+  @ApiOkResponse({ type: [User] })
+  @ApiQuery({ name: 'name', required: false })
+  @Get('/serach-user')
+  async searchUser(@Query('name') name?: string): Promise<User[]> {
+    return this.usersService.searchUser(name);
+  }
 }

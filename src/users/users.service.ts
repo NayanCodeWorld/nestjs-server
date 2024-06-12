@@ -1,33 +1,35 @@
-import { CreateUserDto } from './dto/cerate-user.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from './dto/cerate-user.dto';  
 import { User } from './entities/user.entity';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-    private users: User[] = [{id: 1, name: 'Ram'}, {id: 2, name:'Mohan'}];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-    findAll():User[] {
-        return this.users;
-    }
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find();
+  }
 
-    findById(userId: number):User {
-        let user = this.users.find(u => u.id === userId);
-        if(!user){
-            throw new NotFoundException()
-        }
-        return user;
+  async findById(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException();
     }
+    return user;
+  }
 
-    addUser(createUserDto:CreateUserDto):User {
-        let currUser = {id: Date.now(), ...createUserDto}
-        this.users.push(currUser);
-        return currUser;
-    }
+  async addUser(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
+  }
 
-    searchUser(name:string):User[]{
-        if(name){
-            return this.users.filter(user => user.name === name)
-        }
-        return [];
-    }
+  async searchUser(name: string): Promise<User[]> {
+    return this.userRepository.find({ where: { name } });
+  }
 }
